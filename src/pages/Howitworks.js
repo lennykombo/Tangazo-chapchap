@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 //import mikerophone from "../assets/mikerophone.jpg"
@@ -14,6 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
 function Howitworks() {
 
      const stepsRef = useRef([]);
+     const navigate = useNavigate();
 
   useEffect(() => {
     stepsRef.current.forEach((el, i) => {
@@ -159,7 +161,7 @@ function Howitworks() {
           Start today and get your news or ad live on air. Reach thousands of listeners instantly.
         </p>
         <a
-          href="/"
+          href="/post-news"
           className="bg-orange-500 text-white px-8 py-3 rounded-full text-lg hover:bg-orange-600 transition"
         >
           Get Started
