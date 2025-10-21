@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 //import mikerophone from "../assets/mikerophone.jpg"
@@ -15,7 +14,6 @@ gsap.registerPlugin(ScrollTrigger);
 function Howitworks() {
 
      const stepsRef = useRef([]);
-     const navigate = useNavigate();
 
   useEffect(() => {
     stepsRef.current.forEach((el, i) => {
