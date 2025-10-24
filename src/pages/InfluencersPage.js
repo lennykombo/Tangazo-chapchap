@@ -612,7 +612,7 @@ const handleSubmit = async (e) => {
         {/* Services */}
         <div>
           <h4 className="text-lg font-semibold text-orange-600 mb-3">
-            Service Pricing (USD)
+            Service Pricing (Ksh)
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {Object.entries(viewInfluencer.services || {}).map(([service, price]) => (
@@ -624,7 +624,7 @@ const handleSubmit = async (e) => {
       {serviceLabels[service] || service}
     </span>
     <span className="font-semibold text-orange-600">
-      ${price || 0}
+      Ksh: {price || 0}
     </span>
   </div>
 ))}
