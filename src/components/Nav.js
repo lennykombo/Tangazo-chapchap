@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function Nav() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -26,6 +26,9 @@ function Nav() {
         </Link>
         <Link to="/post-news" className="hover:text-orange-500">
           Post It
+        </Link>
+        <Link to="/influencer" className="hover:text-orange-500">
+          Influencer Marketing
         </Link>
       </nav>
 

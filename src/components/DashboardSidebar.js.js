@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, Radio, Mic, User, Tv, LogOut, X } from "lucide-react";
+import { Home, Radio, Mic, User, Tv, LogOut, X, UserPlus } from "lucide-react";
 
 function DashboardSidebar({ onLogout, closeSidebar }) {
   const navItems = [
@@ -9,6 +9,8 @@ function DashboardSidebar({ onLogout, closeSidebar }) {
     { to: "/dashboard/shows", label: "Shows", icon: <Mic size={20} /> },
     { to: "/dashboard/presenters", label: "Presenters", icon: <User size={20} /> },
     { to: "/dashboard/ads", label: "Ads", icon: <Tv size={20} /> },
+    { to: "/dashboard/influencers", label: "Influencers", icon: <UserPlus size={20} /> },
+    { to: "/dashboard/campaigns", label: "Campaigns", icon: <UserPlus size={20} /> }
   ];
 
   return (
