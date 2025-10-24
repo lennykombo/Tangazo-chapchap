@@ -25,10 +25,10 @@ function Nav() {
           How It Works
         </Link>
         <Link to="/post-news" className="hover:text-orange-500">
-          Post It
+          Radio Promotion
         </Link>
         <Link to="/influencer" className="hover:text-orange-500">
-          Influencer Marketing
+          Influencer Promotion
         </Link>
       </nav>
 
@@ -67,12 +67,19 @@ function Nav() {
             >
               How It Works
             </Link>
+            <Link
+              to="/influencer"
+              className="block w-full text-gray-700 hover:text-orange-500"
+              onClick={toggleMenu}
+            >
+              Influencer Promotion
+            </Link>
              <Link
             to="/post-news"
             onClick={toggleMenu}
             className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
           >
-            Submit Post
+            Radio Promotion
           </Link>
            
             {/*<button
