@@ -13,7 +13,7 @@ function Nav() {
     <header className="flex items-center justify-between px-6 md:px-10 py-4 border-b bg-white sticky top-0 z-50">
       {/* LOGO */}
       <Link to="/" className="text-2xl font-bold tracking-tight">
-        <span className="text-orange-500">Tangazo</span>ChapChap.
+        <span className="text-orange-500">HustleWave</span>360
       </Link>
 
       {/* DESKTOP NAV */}

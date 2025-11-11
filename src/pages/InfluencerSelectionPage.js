@@ -48,6 +48,20 @@ const formatCompact = (n) => {
 
 // -------------------------------------------------------------
 
+const serviceLabels = {
+  tiktokpostPrice: "TikTok Post Price",
+  tiktokmentionPrice: "TikTok Mention Price",
+  facebookpostPrice: "Facebook Post Price",
+  facebookmentionPrice: "Facebook Mention Price",
+  instagrampostPrice: "Instagram Post Price",
+  instagrammentionPrice: "Instagram Mention Price",
+  YoutubepostPrice: "YouTube Post Price",
+  youtubementionPrice: "YouTube Mention Price",
+  promoVideoPrice: "Promo Video Price",
+  voiceOverPrice: "Voice Over Price",
+};
+
+
 const InfluencerSelectionPage = () => {
   const navigate = useNavigate();
 
