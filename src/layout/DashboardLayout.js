@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import DashboardSidebar from "../components/DashboardSidebar.js"
 import { Menu } from "lucide-react";
 
+
 const DashboardLayout = ({ onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -27,7 +28,7 @@ const DashboardLayout = ({ onLogout }) => {
           >
             <Menu size={24} className="text-gray-700" />
           </button>
-          <h1 className="text-lg font-semibold text-orange-500">TangazoChapChap</h1>
+          <h1 className="text-lg font-semibold text-orange-500">Hustlewave360</h1>
         </header>
 
         <main className="flex-1 p-6 overflow-y-auto">

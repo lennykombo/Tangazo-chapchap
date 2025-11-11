@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Home, Radio, Mic, User, Tv, LogOut, X, UserPlus } from "lucide-react";
+import logoImg from "../assets/hustlelogo.png"
 
 function DashboardSidebar({ onLogout, closeSidebar }) {
   const navItems = [
@@ -18,7 +19,13 @@ function DashboardSidebar({ onLogout, closeSidebar }) {
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b">
         <div>
-          <h1 className="text-2xl font-bold text-orange-500">TangazoChapChap</h1>
+          <div className="inline-block">
+  <img
+    src={logoImg}
+    alt="TangazoChapChap Logo"
+    className="h-16 sm:h-20 md:h-24 w-auto"
+  />
+</div>
           <p className="text-sm text-gray-500 mt-1">Admin Dashboard</p>
         </div>
         <button className="md:hidden" onClick={closeSidebar}>
