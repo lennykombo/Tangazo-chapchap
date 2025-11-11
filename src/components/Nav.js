@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import logoImg from "../assets/hustlelogo.png"
 
 function Nav() {
 
@@ -12,9 +13,13 @@ function Nav() {
   return (
     <header className="flex items-center justify-between px-6 md:px-10 py-4 border-b bg-white sticky top-0 z-50">
       {/* LOGO */}
-      <Link to="/" className="text-2xl font-bold tracking-tight">
-        <span className="text-orange-500">HustleWave</span>360
-      </Link>
+     <Link to="/" className="flex items-center gap-2">
+  <img
+    src={logoImg}
+    alt="HustleWave360 Logo"
+    className="h-28 w-auto" // bigger height for better visibility
+  />
+</Link>
 
       {/* DESKTOP NAV */}
       <nav className="hidden md:flex items-center space-x-6">
