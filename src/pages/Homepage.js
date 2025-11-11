@@ -51,7 +51,7 @@ function Homepage() {
       className="text-center py-20 bg-orange-50 px-4 md:px-0">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
           Empowering Communities <br />
-          <span className="text-orange-500 italic">Through Through Media</span>
+          <span className="text-orange-500 italic">Through Media</span>
         </h2>
         <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
           HustleWave360 connects voices to the airwaves — allowing anyone to share
