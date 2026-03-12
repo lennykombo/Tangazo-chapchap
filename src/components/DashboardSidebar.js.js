@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, Radio, Mic, User, Tv, LogOut, X, UserPlus } from "lucide-react";
+import { Home, Radio, Mic, User, Tv, LogOut, X, UserPlus, CheckCircle } from "lucide-react";
 import logoImg from "../assets/hustlelogo.png"
 
 function DashboardSidebar({ onLogout, closeSidebar }) {
@@ -11,7 +11,8 @@ function DashboardSidebar({ onLogout, closeSidebar }) {
     { to: "/dashboard/presenters", label: "Presenters", icon: <User size={20} /> },
     { to: "/dashboard/ads", label: "Ads", icon: <Tv size={20} /> },
     { to: "/dashboard/influencers", label: "Influencers", icon: <UserPlus size={20} /> },
-    { to: "/dashboard/campaigns", label: "Campaigns", icon: <UserPlus size={20} /> }
+    { to: "/dashboard/campaigns", label: "Campaigns", icon: <UserPlus size={20} /> },
+    { to: "/dashboard/submissions", label: "Submissions", icon: <CheckCircle size={20} /> }
   ];
 
   return (

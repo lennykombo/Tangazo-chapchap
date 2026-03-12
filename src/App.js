@@ -18,6 +18,9 @@ import InfluencerSelectionPage from "./pages/InfluencerSelectionPage";
 import Campaignpage from "./pages/Campaignpage";
 import InfluencersPage from "./pages/InfluencersPage";
 import Campaigns from "./pages/Campaigns";
+import InfluencerDashboard from "./pages/InfluencerDashboard";
+import InfluencerSignup from "./pages/InfluencerSignup";
+import Submissions from "./pages/Submissions";
 
 function App() {
 
@@ -32,6 +35,7 @@ function App() {
         <Route path="/post-news" element={<PostNews />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/influencer-signup" element={<InfluencerSignup />} />
         <Route
           path="/influencer"
           element={
@@ -48,6 +52,15 @@ function App() {
               selectedInfluencers={selectedInfluencers}
               setSelectedInfluencers={setSelectedInfluencers}
             />
+          }
+        />
+
+        <Route
+          path="/influencer/dashboard"
+          element={
+            <ProtectedRoute>
+              <InfluencerDashboard />
+            </ProtectedRoute>
           }
         />
 
@@ -68,6 +81,7 @@ function App() {
           <Route path="ads" element={<Ads />} />
           <Route path="influencers" element={<InfluencersPage />} />
           <Route path="campaigns" element={<Campaigns />} />
+          <Route path="submissions" element={<Submissions />} />
         </Route>
       </Routes>
     </Router>

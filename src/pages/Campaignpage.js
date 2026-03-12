@@ -38,6 +38,7 @@ const Campaignpage = () => {
   const [description, setDescription] = useState("");
   const [mediaFile, setMediaFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [name, setName] = useState(""); 
 
   // ✅ Load influencers from localStorage
   useEffect(() => {
@@ -69,6 +70,7 @@ const Campaignpage = () => {
   const clearCampaign = () => {
     localStorage.removeItem("campaignInfluencers");
     setSelectedInfluencers([]);
+    setName("");
     setDescription("");
     setMediaFile(null);
     setPreviewUrl("");
@@ -88,6 +90,11 @@ const Campaignpage = () => {
       return;
     }
 
+     if (!name.trim()) {
+        alert("⚠️ Please enter a Campaign Title.");
+        return;
+    }
+
     setLoading(true);
     try {
       let mediaUrl = "";
@@ -96,6 +103,7 @@ const Campaignpage = () => {
       }
 
       const campaignData = {
+        name: name.trim(),
         influencers: selectedInfluencers,
         totalCost: totalCampaignPrice,
         description: description.trim(),
@@ -166,7 +174,7 @@ const Campaignpage = () => {
                         <h2 className="font-semibold text-lg text-gray-800">
                           {inf.name}
                         </h2>
-                        <p className="text-sm text-gray-600">@{inf.username}</p>
+                        <p className="text-sm text-gray-600">{inf.username}</p>
                       </div>
                     </div>
                     <button
@@ -222,6 +230,18 @@ const Campaignpage = () => {
 
           {/* Campaign Details */}
           <div className="mt-10 bg-white border rounded-xl shadow-md p-5 space-y-5">
+            <div>
+              <label className="block font-bold text-gray-700 mb-1">
+                Campaign Title
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Brand Launch Live Session"
+                className="w-full border-2 border-gray-100 rounded-lg p-3 focus:outline-none focus:border-orange-400 font-medium"
+              />
+            </div>
             <div>
               <label className="block font-medium text-gray-700 mb-1">
                 Campaign Description

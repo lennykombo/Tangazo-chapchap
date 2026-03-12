@@ -15,6 +15,38 @@ const serviceLabels = {
   youtubementionPrice: "YouTube Mention Price",
   promoVideoPrice: "Promo Video Price",
   voiceOverPrice: "Voice Over Price",
+  tiktoklive_shoutoutPrice: "TikTok Live Quick Mention (30-60s)",
+  tiktoklive_segmentPrice: "TikTok Live Product Segment (3-5m)",
+  tiktoklive_sponsorPrice: "TikTok Live Sponsor",
+  iglive_segmentPrice: "Instagram Live Segment (3-5m)",
+  youtubelive_prerollPrice: "YouTube Live Pre-Roll (60s)",
+  youtubelive_midrollPrice: "YouTube Live Mid-Roll (2-3m)",
+  youtubelive_pinnedPrice: "YouTube Live Pinned Link",
+  facebooklive_mentionPrice: "Facebook Live Shoutout (60s)",
+  facebooklive_showcasePrice: "Facebook Live Showcase (5-10m)",
+};
+
+
+const serviceDisplayNames = {
+  tiktokpost: "TikTok Post",
+  tiktokmention: "TikTok Mention",
+  facebookpost: "Facebook Post",
+  facebookmention: "Facebook Mention",
+  instagrampost: "Instagram Post",
+  instagrammention: "Instagram Mention",
+  Youtubepost: "YouTube Post",
+  youtubemention: "YouTube Mention",
+  promoVideo: "Promo Video",
+  voiceOver: "Voice Over",
+  tiktoklive_shoutout: "TikTok Live Quick Mention",
+  tiktoklive_segment: "TikTok Live Product Segment",
+  tiktoklive_sponsor: "TikTok Live Sponsor",
+  iglive_segment: "Instagram Live Product Segment",
+  youtubelive_preroll: "YouTube Live Pre-Roll",
+  youtubelive_midroll: "YouTube Live Mid-Roll",
+  youtubelive_pinned: "YouTube Live Pinned Link",
+  facebooklive_mention: "Facebook Live Shoutout",
+  facebooklive_showcase: "Facebook Live Showcase",
 };
 
 
@@ -27,6 +59,8 @@ const Influencers = () => {
   const [formData, setFormData] = useState({
     name: "",
     username: "",
+    email: "", 
+    password: "",
     verified: false,
     age: "",
     niches: "",
@@ -46,6 +80,15 @@ const Influencers = () => {
     tiktokpostPrice: "",
     promoVideoPrice: "",
     voiceOverPrice: "",
+    tiktoklive_shoutoutPrice: "",
+  tiktoklive_segmentPrice: "",
+  tiktoklive_sponsorPrice: "",
+  iglive_segmentPrice: "",
+  youtubelive_prerollPrice: "",
+  youtubelive_midrollPrice: "",
+  youtubelive_pinnedPrice: "",
+  facebooklive_mentionPrice: "",
+  facebooklive_showcasePrice: "",
   });
 
   // Load influencers
@@ -101,6 +144,8 @@ const handleSubmit = async (e) => {
     const influencerData = {
       name: formData.name,
       username: formData.username,
+      email: formData.email,
+      claimed: false, 
       verified: formData.verified,
       age: formData.age,
       niches: formData.niches
@@ -124,6 +169,16 @@ const handleSubmit = async (e) => {
         tiktokpost: Number(formData.tiktokpostPrice) || 0,
         promoVideo: Number(formData.promoVideoPrice) || 0,
         voiceOver: Number(formData.voiceOverPrice) || 0,
+
+         tiktoklive_shoutout: Number(formData.tiktoklive_shoutoutPrice) || 0,
+        tiktoklive_segment: Number(formData.tiktoklive_segmentPrice) || 0,
+        tiktoklive_sponsor: Number(formData.tiktoklive_sponsorPrice) || 0,
+        iglive_segment: Number(formData.iglive_segmentPrice) || 0,
+        youtubelive_preroll: Number(formData.youtubelive_prerollPrice) || 0,
+        youtubelive_midroll: Number(formData.youtubelive_midrollPrice) || 0,
+        youtubelive_pinned: Number(formData.youtubelive_pinnedPrice) || 0,
+        facebooklive_mention: Number(formData.facebooklive_mentionPrice) || 0,
+        facebooklive_showcase: Number(formData.facebooklive_showcasePrice) || 0,
       },
       img: imageUrl || "https://via.placeholder.com/100", // fallback if missing
       createdAt: new Date(),
@@ -157,6 +212,8 @@ const handleSubmit = async (e) => {
     setFormData({
       name: "",
       username: "",
+      email: "",
+      password: "",
       verified: false,
       age: "",
       niches: "",
@@ -176,6 +233,16 @@ const handleSubmit = async (e) => {
       tiktokpostPrice: "",
       promoVideoPrice: "",
       voiceOverPrice: "",
+
+      tiktoklive_shoutoutPrice: "",
+    tiktoklive_segmentPrice: "",
+    tiktoklive_sponsorPrice: "",
+    iglive_segmentPrice: "",
+    youtubelive_prerollPrice: "",
+    youtubelive_midrollPrice: "",
+    youtubelive_pinnedPrice: "",
+    facebooklive_mentionPrice: "",
+    facebooklive_showcasePrice: "",
     });
     setPreviewUrl("");
     setShowModal(false);
@@ -207,6 +274,17 @@ const handleSubmit = async (e) => {
     tiktokpostPrice: inf.services?.tiktokpost || "",
     promoVideoPrice: inf.services?.promoVideo || "",
     voiceOverPrice: inf.services?.voiceOver || "",
+
+     tiktoklive_shoutoutPrice: inf.services?.tiktoklive_shoutout || "",
+    tiktoklive_segmentPrice: inf.services?.tiktoklive_segment || "",
+    tiktoklive_sponsorPrice: inf.services?.tiktoklive_sponsor || "",
+    iglive_segmentPrice: inf.services?.iglive_segment || "",
+    youtubelive_prerollPrice: inf.services?.youtubelive_preroll || "",
+    youtubelive_midrollPrice: inf.services?.youtubelive_midroll || "",
+    youtubelive_pinnedPrice: inf.services?.youtubelive_pinned || "",
+    facebooklive_mentionPrice: inf.services?.facebooklive_mention || "",
+    facebooklive_showcasePrice: inf.services?.facebooklive_showcase || "",
+    
     imgFile: null, // reset file input
     img: inf.img || "", // keep existing image URL
   });
@@ -241,6 +319,7 @@ const handleSubmit = async (e) => {
           <th className="py-3 px-4 text-left font-semibold">Image</th>
           <th className="py-3 px-4 text-left font-semibold">Name</th>
           <th className="py-3 px-4 text-left font-semibold">Followers</th>
+          <th className="py-3 px-4 text-left font-semibold">Status</th>
           <th className="py-3 px-4 text-center font-semibold">Actions</th>
         </tr>
       </thead>
@@ -271,6 +350,13 @@ const handleSubmit = async (e) => {
                 </td>
                 <td className="py-3 px-4 text-gray-700 font-semibold">
                   {totalFollowers.toLocaleString()}
+                </td>
+                <td className="py-3 px-4">
+                  {inf.claimed ? (
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">Joined</span>
+                     ) : (
+                    <span className="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full font-bold">Pending</span>
+                   )}
                 </td>
                 <td className="py-3 px-4 text-center">
                   <div className="flex justify-center gap-2">
@@ -342,6 +428,14 @@ const handleSubmit = async (e) => {
               Followers: <span className="text-orange-600">{totalFollowers.toLocaleString()}</span>
             </p>
 
+            <div className="mt-1">
+              {inf.claimed ? (
+             <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Account Joined</span>
+               ) : (
+             <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold">Pending Claim</span>
+              )}
+            </div>
+
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setViewInfluencer(inf)}
@@ -390,6 +484,32 @@ const handleSubmit = async (e) => {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* --- Basic Info --- */}
+        <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+    <input
+      name="email"
+      type="email"
+      value={formData.email}
+      onChange={handleChange}
+      placeholder="influencer@email.com"
+      className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-orange-400"
+      required
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
+    <input
+      name="password"
+      type="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="Min 6 characters"
+      className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-orange-400"
+      required={!editingId} // Only required when adding new, not editing
+    />
+  </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
           <input
@@ -492,7 +612,36 @@ const handleSubmit = async (e) => {
 
         {/* --- Service Pricing --- */}
         <h4 className="col-span-full font-semibold mt-4 text-gray-700">
-          Service Pricing (USD)
+          Service Pricing (KSH)
+        </h4>
+        {/*[
+          "tiktokmentionPrice",
+          "facebookmentionPrice",
+          "instagrammentionPrice",
+          "youtubementionPrice",
+          "facebookpostPrice",
+          "instagrampostPrice",
+          "YoutubepostPrice",
+          "tiktokpostPrice",
+          "promoVideoPrice",
+          "voiceOverPrice",
+        ].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {serviceLabels[field] || field}
+            </label>
+            <input
+              type="number"
+              name={field}
+              value={formData[field] || ""}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+          </div>
+        ))*/}
+        {/* --- Standard Service Pricing --- */}
+        <h4 className="col-span-full font-bold mt-6 text-orange-600 border-b pb-2">
+          Standard Service Pricing (KSH)
         </h4>
         {[
           "tiktokmentionPrice",
@@ -516,6 +665,35 @@ const handleSubmit = async (e) => {
               value={formData[field] || ""}
               onChange={handleChange}
               className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+          </div>
+        ))}
+
+        {/* --- Live Streaming Services --- */}
+        <h4 className="col-span-full font-bold mt-6 text-red-600 border-b pb-2">
+          Live Streaming Services (KSH)
+        </h4>
+        {[
+          "tiktoklive_shoutoutPrice",
+          "tiktoklive_segmentPrice",
+          "tiktoklive_sponsorPrice",
+          "iglive_segmentPrice",
+          "youtubelive_prerollPrice",
+          "youtubelive_midrollPrice",
+          "youtubelive_pinnedPrice",
+          "facebooklive_mentionPrice",
+          "facebooklive_showcasePrice"
+        ].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {serviceLabels[field] || field}
+            </label>
+            <input
+              type="number"
+              name={field}
+              value={formData[field] || ""}
+              onChange={handleChange}
+              className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-red-400"
             />
           </div>
         ))}
@@ -620,7 +798,8 @@ const handleSubmit = async (e) => {
     className="flex justify-between items-center bg-gray-50 border border-gray-100 p-3 rounded-lg shadow-sm"
   >
     <span className="text-gray-700 font-medium">
-      {serviceLabels[service] || service}
+      {/*serviceLabels[service] || service*/}
+        {serviceDisplayNames[service] || service}
     </span>
     <span className="font-semibold text-orange-600">
       Ksh: {price || 0}

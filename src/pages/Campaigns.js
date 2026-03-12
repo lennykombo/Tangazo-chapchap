@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, updateDoc, doc } from "firebase/firestore";
 import { db } from "../components/firebase";
 import { Loader2, X } from "lucide-react";
 
@@ -42,6 +42,26 @@ const Campaigns = () => {
 
     fetchCampaigns();
   }, []);
+
+  const updateCampaignStatus = async (campaignId, newStatus) => {
+  try {
+    const campaignRef = doc(db, "campaigns", campaignId);
+    await updateDoc(campaignRef, {
+      status: newStatus
+    });
+    
+    // Update local state so the UI refreshes immediately
+    setCampaigns((prev) =>
+      prev.map((c) => (c.id === campaignId ? { ...c, status: newStatus } : c))
+    );
+    setSelectedCampaign((prev) => ({ ...prev, status: newStatus }));
+    
+    alert(`Campaign ${newStatus} successfully!`);
+  } catch (error) {
+    console.error("Error updating status:", error);
+    alert("Failed to update status.");
+  }
+};
 
   return (
      <div className="min-h-screen bg-gray-50 py-10 px-6">
@@ -154,7 +174,7 @@ const Campaigns = () => {
                     />
                     <div>
                       <p className="font-semibold text-gray-800">{inf.name}</p>
-                      <p className="text-xs text-gray-500">@{inf.username}</p>
+                      <p className="text-xs text-gray-500">{inf.username}</p>
 
                       <ul className="mt-1 text-sm text-gray-600 list-disc pl-4">
                         {inf.selectedServices?.map((srv, idx) => (
@@ -229,6 +249,32 @@ const Campaigns = () => {
                 Ksh {selectedCampaign.totalCost?.toFixed(2)}
               </span>
             </div>
+
+            <div className="mt-8 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+  <h3 className="font-bold text-gray-800 mb-3">Admin Actions: Change Status</h3>
+  <div className="flex gap-3">
+    {selectedCampaign.status !== "Approved" && (
+      <button
+        onClick={() => updateCampaignStatus(selectedCampaign.id, "Approved")}
+        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-xl transition"
+      >
+        Approve & Send to Influencers
+      </button>
+    )}
+    
+    {selectedCampaign.status !== "Rejected" && (
+      <button
+        onClick={() => updateCampaignStatus(selectedCampaign.id, "Rejected")}
+        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl transition"
+      >
+        Reject Campaign
+      </button>
+    )}
+  </div>
+  <p className="text-[10px] text-gray-400 mt-2 italic text-center">
+    Approved campaigns appear instantly on the Influencer's dashboard.
+  </p>
+</div>
 
             <div className="mt-4 text-right">
               <button
