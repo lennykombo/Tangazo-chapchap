@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../components/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { Search, CheckCircle, X, Radio } from "lucide-react";
+import { Search, CheckCircle, X, Radio, PlayCircle, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, query, where, orderBy,  } from "firebase/firestore";
 import { db } from "../components/firebase";
@@ -148,7 +148,7 @@ const InfluencerSelectionPage = () => {
 }, [activeInfluencer]); 
 
 
-useEffect(() => {
+/*useEffect(() => {
   const fetchAllUpcomingLives = async () => {
     try {
       const now = new Date().toISOString();
@@ -165,6 +165,45 @@ useEffect(() => {
     }
   };
   fetchAllUpcomingLives();
+}, []);*/
+
+useEffect(() => {
+  const fetchAllUpcomingLives = async () => {
+    try {
+      // 🕒 Calculate a "Cutoff" time (e.g., 2 hours ago)
+      // This ensures that if someone is live for 1.5 hours, the card stays up.
+      const cutoff = new Date();
+      cutoff.setHours(cutoff.getHours() - 2); 
+      const cutoffISO = cutoff.toISOString();
+
+      const q = query(
+        collection(db, "liveSchedules"),
+        where("time", ">=", cutoffISO), // Fetch sessions from 2 hours ago onwards
+        orderBy("time", "asc")
+      );
+      
+      const snap = await getDocs(q);
+      const sessions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // 🧹 Local Filter: Remove sessions that are officially "Expired"
+      // A session is expired if current time > (Start Time + 2 hours)
+      const activeSessions = sessions.filter(session => {
+        const startTime = new Date(session.time).getTime();
+        const expiryTime = startTime + (2 * 60 * 60 * 1000); // 2 hours window
+        return new Date().getTime() < expiryTime;
+      });
+
+      setAllLiveSessions(activeSessions);
+    } catch (err) {
+      console.error("Error fetching live schedule:", err);
+    }
+  };
+
+  fetchAllUpcomingLives();
+  
+  // Refresh every 5 minutes to remove expired cards automatically
+  const interval = setInterval(fetchAllUpcomingLives, 300000); 
+  return () => clearInterval(interval);
 }, []);
 
   const allNiches = Array.from(new Set(influencers.flatMap((inf) => inf.niches || [])));
@@ -208,7 +247,7 @@ useEffect(() => {
     return Object.values(inf.socials).reduce((sum, v) => sum + parseFollowers(v), 0);
   };
 
-  const isLiveNow = (sessionTime) => {
+ /* const isLiveNow = (sessionTime) => {
   if (!sessionTime) return false;
   const startTime = new Date(sessionTime).getTime();
   const now = new Date().getTime();
@@ -216,6 +255,16 @@ useEffect(() => {
   
   // Returns true if the current time is between the start time and 1 hour later
   return now >= startTime && now <= (startTime + oneHourInMs);
+};*/
+
+const isLiveNow = (sessionTime) => {
+  const startTime = new Date(sessionTime).getTime();
+  const now = new Date().getTime();
+  
+  // Define "Live Now" as: Started in the last 90 minutes
+  const liveWindow = 90 * 60 * 1000; 
+  
+  return now >= startTime && now <= (startTime + liveWindow);
 };
 
   const handleGoogleLogin = async () => {
@@ -424,6 +473,39 @@ const renderServiceItem = (name, price) => {
               by {session.influencerName}
             </p>
             
+            {/*live && (
+               <a 
+                href={session.liveLink} 
+                target="_blank" 
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()} // ❗ Prevents opening the profile modal when clicking the link
+                className="mb-4 flex items-center justify-center gap-2 w-full py-2 bg-white text-red-600 rounded-xl font-black text-[10px] uppercase shadow-lg hover:scale-105 transition-transform"
+                 >
+                <PlayCircle size={14} /> Watch Stream Now
+               </a>
+              )*/}
+              {live ? (
+  <button 
+    onClick={(e) => {
+      e.stopPropagation(); // Prevents opening the profile modal
+      
+      // 🛡️ SECURITY CHECK: Check if logged in before opening the external stream
+      if (auth.currentUser) {
+        window.open(session.liveLink, "_blank");
+      } else {
+        setShowLoginModal(true); // Force them to sign in first
+      }
+    }}
+    className="mb-4 flex items-center justify-center gap-2 w-full py-2 bg-white text-red-600 rounded-xl font-black text-[10px] uppercase shadow-lg hover:scale-105 transition-transform border border-red-100"
+  >
+    <PlayCircle size={14} /> Watch Stream Now
+  </button>
+) : (
+  <div className="mb-4 text-[10px] font-bold text-gray-400 bg-gray-50 p-2 rounded-xl text-center border border-gray-100">
+    Waiting for start...
+  </div>
+)}
+
             <div className={`flex justify-between items-center border-t pt-3 ${
               live ? "border-white/10" : "border-gray-50"
             }`}>
@@ -577,10 +659,8 @@ const renderServiceItem = (name, price) => {
       <Footer />
 
       {/* ✅ Influencer Modal */}
-   
-
-         {activeInfluencer && (
-  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4 sm:p-6">
+   {activeInfluencer && (
+   <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4 sm:p-6">
     {/* MODAL BOX - Increased width to max-w-4xl for 2 columns */}
     <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full relative overflow-hidden flex flex-col max-h-[95vh]">
       
@@ -642,6 +722,9 @@ const renderServiceItem = (name, price) => {
           <div className="flex flex-col">
             <span className="text-sm font-black text-gray-800 leading-tight">{live.topic}</span>
             <span className="text-[10px] font-bold text-gray-400 uppercase">{live.platform}</span>
+             <a href={live.liveLink} target="_blank" rel="noreferrer" className="text-[9px] text-blue-500 font-bold underline flex items-center gap-1">
+              Open Platform <ExternalLink size={8} />
+              </a>
           </div>
           <div className="text-right">
             <span className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-lg">

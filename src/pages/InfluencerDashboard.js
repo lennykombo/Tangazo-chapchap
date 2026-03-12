@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../components/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, collection, query, where, getDocs, addDoc, orderBy, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, addDoc, orderBy, deleteDoc, updateDoc } from "firebase/firestore";
 import { 
   Calendar, LayoutDashboard, Radio, LogOut, Plus, Trash2, Upload, FileVideo, Image as ImageIcon, 
   AlertCircle, Award, History, Briefcase,
@@ -34,6 +34,9 @@ const submissionRef = React.useRef(null);
   const [rejectedSubs, setRejectedSubs] = useState([]);
   const [mySchedules, setMySchedules] = useState([]);
   const [scheduleError, setScheduleError] = useState("");
+  //const [liveLink, setLiveLink] = useState("");
+  const [linkUpdateId, setLinkUpdateId] = useState(null); // Tracks which schedule we are adding a link to
+const [tempLink, setTempLink] = useState(""); // The link being pasted
 
   const navigate = useNavigate();
 
@@ -208,6 +211,18 @@ const fetchInfluencerData = async (uid) => {
   }
 };*/
 
+const validateSocialLink = (url, platform) => {
+  const patterns = {
+    TikTok: /^(https?:\/\/)?(www\.)?(tiktok\.com|vm\.tiktok\.com)/i,
+    Instagram: /^(https?:\/\/)?(www\.)?(instagram\.com|ig\.me)/i,
+    YouTube: /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)/i,
+    Facebook: /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.watch|fb\.com)/i,
+  };
+
+  const pattern = patterns[platform];
+  return pattern ? pattern.test(url) : false;
+};
+
 const handleAddSchedule = async (e) => {
   e.preventDefault();
   setScheduleError(""); // Reset error
@@ -241,6 +256,7 @@ const handleAddSchedule = async (e) => {
       platform: livePlatform,
       time: liveDateTime,
       topic: liveTopic.trim(),
+      liveLink: profile.socials[livePlatform.toLowerCase()] || "",
       createdAt: new Date()
     });
 
@@ -325,6 +341,52 @@ const handleAddSchedule = async (e) => {
       setVideoPreview(""); setSsPreview(""); setSelectedCampaign("");
     } catch (err) { alert("Upload failed"); } finally { setIsSubmitting(false); }
   };
+
+  /*const handleUpdateLiveLink = async (id) => {
+  if (!tempLink.trim()) return alert("Please paste a link first");
+  
+  try {
+    const docRef = doc(db, "liveSchedules", id);
+    await updateDoc(docRef, {
+      liveLink: tempLink.trim()
+    });
+    
+    alert("Live link added! Brands can now join your stream.");
+    setLinkUpdateId(null);
+    setTempLink("");
+    fetchInfluencerData(user.uid); // Refresh list
+  } catch (err) {
+    console.error(err);
+  }
+};*/
+
+const handleUpdateLiveLink = async (id, platform) => {
+  if (!tempLink.trim()) return alert("Please paste a link first");
+
+  // 🛡️ SECURITY CHECK: Ensure link matches the selected platform
+  const isValid = validateSocialLink(tempLink.trim(), platform);
+
+  if (!isValid) {
+    alert(`Invalid link! Please provide a valid ${platform} URL.`);
+    return;
+  }
+
+  try {
+    const docRef = doc(db, "liveSchedules", id);
+    await updateDoc(docRef, {
+      liveLink: tempLink.trim(),
+      isLive: true // Optional: a flag to tell the public site "He is actually live now"
+    });
+
+    alert("Success! Your live link is now public.");
+    setLinkUpdateId(null);
+    setTempLink("");
+    fetchInfluencerData(user.uid);
+  } catch (err) {
+    console.error(err);
+    alert("Error updating link.");
+  }
+};
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold">Synchronizing...</div>;
 
@@ -558,7 +620,7 @@ const handleAddSchedule = async (e) => {
                 ))}
               </div>*/}
               <div className="space-y-4">
-  {mySchedules.map((live) => (
+  {/*mySchedules.map((live) => (
     <div key={live.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
       <div className="flex items-center gap-4">
         <div className="bg-white p-3 rounded-xl shadow-sm text-orange-600"><Calendar size={20} /></div>
@@ -573,7 +635,46 @@ const handleAddSchedule = async (e) => {
         <Trash2 size={20} />
       </button>
     </div>
-  ))}
+  ))*/}
+                   {mySchedules.map((live) => (
+  <div key={live.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+    <div className="flex justify-between items-center mb-3">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-white rounded-xl shadow-sm text-orange-600"><Calendar size={18} /></div>
+        <div>
+          <p className="text-xs font-black text-gray-800 leading-none mb-1">{live.topic}</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase">{live.platform} • {new Date(live.time).toLocaleString()}</p>
+        </div>
+      </div>
+      <button onClick={() => removeSchedule(live.id)} className="text-gray-300 hover:text-red-500"><Trash2 size={16}/></button>
+    </div>
+
+    {/* --- 🔗 LINK UPDATE SECTION --- */}
+    {linkUpdateId === live.id ? (
+      <div className="flex gap-2 animate-in fade-in slide-in-from-top-2">
+        <input 
+          type="url" 
+          placeholder="Paste the link from TikTok/IG..." 
+          className="flex-1 p-2 text-[10px] border rounded-lg outline-none focus:border-orange-500"
+          value={tempLink}
+          onChange={(e) => setTempLink(e.target.value)}
+        />
+        <button 
+        //onClick={() => handleUpdateLiveLink(live.id)}
+        onClick={() => handleUpdateLiveLink(live.id, live.platform)}
+        className="bg-green-500 text-white px-3 py-1 rounded-lg text-[10px] font-black">SAVE</button>
+        <button onClick={() => setLinkUpdateId(null)} className="text-gray-400 text-[10px]">Cancel</button>
+      </div>
+    ) : (
+      <button 
+        onClick={() => setLinkUpdateId(live.id)}
+        className={`w-full py-2 rounded-xl text-[10px] font-black transition ${live.liveLink ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600 border border-dashed border-orange-200'}`}
+      >
+        {live.liveLink ? "✅ Link Updated (Click to change)" : "🔗 Add Live Link to Start Session"}
+      </button>
+    )}
+  </div>
+))}
 </div>
             </div>
 
