@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, updateDoc, doc, query, where, orderBy } from "firebase/firestore";
 import { db } from "../components/firebase";
-import { CheckCircle, XCircle, Eye, Clock, User, ExternalLink, Play, AlertCircle, ImageIcon } from "lucide-react";
+import { CheckCircle, XCircle, Eye, User, ExternalLink, Play, AlertCircle, ImageIcon } from "lucide-react";
 
 const Submissions = () => {
   const [submissions, setSubmissions] = useState([]);
