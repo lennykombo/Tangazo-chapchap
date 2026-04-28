@@ -21,6 +21,7 @@ import Campaigns from "./pages/Campaigns";
 import InfluencerDashboard from "./pages/InfluencerDashboard";
 import InfluencerSignup from "./pages/InfluencerSignup";
 import Submissions from "./pages/Submissions";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/influencer-signup" element={<InfluencerSignup />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
         <Route
           path="/influencer"
           element={

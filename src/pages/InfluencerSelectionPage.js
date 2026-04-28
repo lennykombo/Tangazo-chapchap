@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth } from "../components/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Search, CheckCircle, X, Radio, PlayCircle, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { collection, getDocs, query, where, orderBy,  } from "firebase/firestore";
 import { db } from "../components/firebase";
 import Nav from "../components/Nav";
@@ -85,6 +85,7 @@ const InfluencerSelectionPage = () => {
 
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("All");
@@ -122,6 +123,26 @@ const InfluencerSelectionPage = () => {
 
 
   useEffect(() => {
+  // Check if we arrived here with an "autoOpenId" from the Profile Page
+  if (location.state?.autoOpenId && influencers.length > 0) {
+    const targetInfluencer = influencers.find(inf => inf.id === location.state.autoOpenId);
+    
+    if (targetInfluencer) {
+      // Respect your existing security: Only open if logged in
+      if (auth.currentUser) {
+        setActiveInfluencer(targetInfluencer);
+      } else {
+        setPendingInfluencer(targetInfluencer);
+        setShowLoginModal(true);
+      }
+    }
+    
+    // Clear the state so the modal doesn't keep popping up on every refresh
+    window.history.replaceState({}, document.title);
+  }
+}, [location.state, influencers]);
+
+  /*useEffect(() => {
   const fetchActiveSchedules = async () => {
     if (!activeInfluencer) {
       setActiveSchedules([]); // Clear if modal is closed
@@ -145,7 +166,37 @@ const InfluencerSelectionPage = () => {
   };
 
   fetchActiveSchedules();
-}, [activeInfluencer]); 
+}, [activeInfluencer]); */
+
+useEffect(() => {
+  const fetchActiveSchedules = async () => {
+    if (!activeInfluencer) {
+      setActiveSchedules([]);
+      return;
+    }
+
+    try {
+      // 🕒 Get current time in ISO format
+      const now = new Date().toISOString();
+
+      // Update query to only show schedules from "now" onwards
+      const q = query(
+        collection(db, "liveSchedules"),
+        where("influencerId", "==", activeInfluencer.id),
+        where("time", ">=", now), // 👈 THIS IS THE FIX
+        orderBy("time", "asc")
+      );
+
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setActiveSchedules(data);
+    } catch (error) {
+      console.error("Error fetching schedules for this creator:", error);
+    }
+  };
+
+  fetchActiveSchedules();
+}, [activeInfluencer]);
 
 
 /*useEffect(() => {
@@ -698,9 +749,9 @@ const renderServiceItem = (name, price) => {
       </div>
 
       {/* 2. SCROLLABLE BODY SECTION */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar bg-gray-50/30">
+      {/*<div className="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar bg-gray-50/30">
         
-        {/* Platform Stats Summary (Smaller) */}
+        {/* Platform Stats Summary (Smaller) *//*
         <div className="flex flex-wrap gap-2 mb-8 justify-center sm:justify-start">
            {activeInfluencer.socials && Object.entries(activeInfluencer.socials).map(([platform, value]) => (
               <div key={platform} className="px-3 py-1 bg-white border border-gray-200 rounded-lg flex items-center gap-2">
@@ -710,12 +761,78 @@ const renderServiceItem = (name, price) => {
            ))}
         </div>
 
-        {/* --- 🟢 ADDED: LIVE SESSIONS CALENDAR 🟢 --- */}
+        {/* --- 🟢 ADDED: LIVE SESSIONS CALENDAR 🟢 --- *//*
 {activeSchedules.length > 0 && (
   <div className="mb-8 p-6 bg-red-50 rounded-[2rem] border border-red-100">
     <h4 className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
       <Radio size={16} className="animate-pulse" /> Upcoming Live Calendar
-    </h4>
+    </h4>*/}
+
+    <div className="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar bg-gray-50/30">
+        
+        {/* Platform Stats Summary (Smaller) */}
+        <div className="flex flex-wrap gap-2 mb-6 justify-center sm:justify-start">
+           {activeInfluencer.socials && Object.entries(activeInfluencer.socials).map(([platform, value]) => (
+              <div key={platform} className="px-3 py-1 bg-white border border-gray-200 rounded-lg flex items-center gap-2">
+                <span className="capitalize text-[10px] text-gray-400 font-bold">{platform}</span>
+                <span className="font-bold text-xs text-gray-800">{formatCompact(parseFollowers(value))}</span>
+              </div>
+           ))}
+        </div>
+
+        {/* --- 🏆 NEW: SOCIAL PROOF & PORTFOLIO LINK --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {/* Performance Card */}
+          <div className="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Performance</span>
+              <span className="text-[9px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Top Creator</span>
+            </div>
+            <div className="flex items-end gap-1">
+              <span className="text-2xl font-black text-gray-900">{activeInfluencer.engagementRate || "5.2%"}</span>
+              <span className="text-[10px] font-bold text-gray-400 mb-1.5">Avg. Engagement</span>
+            </div>
+            
+            {/* PORTFOLIO BUTTON */}
+            <button 
+              onClick={() => window.open(`/profile/${activeInfluencer.username}`, "_blank")}
+              className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-orange-500 text-white rounded-xl font-bold text-[11px] hover:bg-orange-600 transition-colors shadow-md shadow-orange-100"
+            >
+              <ExternalLink size={12} /> View Previous Jobs / Portfolio
+            </button>
+          </div>
+
+          {/* Previous Brands Card */}
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Worked With</span>
+            <div className="flex flex-wrap gap-1.5">
+              {activeInfluencer.previousBrands ? (
+                activeInfluencer.previousBrands.map((brand, i) => (
+                  <span key={i} className="text-[9px] font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded-md border border-gray-50">
+                    {brand}
+                  </span>
+                ))
+              ) : (
+                <>
+                  <span className="text-[9px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md">Coca-Cola</span>
+                  <span className="text-[9px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md">Safaricom</span>
+                  <span className="text-[9px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md">Netflix</span>
+                  <span className="text-[9px] font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-md">+ 3 More</span>
+                </>
+              )}
+            </div>
+            <p className="text-[9px] text-gray-400 mt-2 italic font-medium">Verified brand collaborations</p>
+          </div>
+        </div>
+        {/* --- 🏆 END NEW SECTION --- */}
+
+        {/* --- 🟢 ADDED: LIVE SESSIONS CALENDAR 🟢 --- */}
+        {activeSchedules.length > 0 && (
+          <div className="mb-8 p-6 bg-red-50 rounded-[2rem] border border-red-100">
+            <h4 className="text-red-600 font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Radio size={16} className="animate-pulse" /> Upcoming Live Calendar
+            </h4>
+
     <div className="space-y-3">
       {activeSchedules.map((live) => (
         <div key={live.id} className="flex justify-between items-center bg-white p-3 rounded-2xl border border-red-50 shadow-sm">

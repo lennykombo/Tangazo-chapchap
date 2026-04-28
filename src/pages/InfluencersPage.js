@@ -89,6 +89,11 @@ const Influencers = () => {
   youtubelive_pinnedPrice: "",
   facebooklive_mentionPrice: "",
   facebooklive_showcasePrice: "",
+  engagementRate: "",
+  previousBrands: "",
+  portfolioLinks: "",
+  portfolioImages: "",
+  portfolioFiles: [],
   });
 
   // Load influencers
@@ -134,18 +139,39 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-    let imageUrl = formData.img || ""; // If editing, keep old image if not changed
+   /* let imageUrl = formData.img || ""; // If editing, keep old image if not changed
 
     // 🖼️ Upload to Cloudinary only if a new file was selected
     if (formData.imgFile) {
       imageUrl = await uploadImageToCloudinary(formData.imgFile);
+    }*/
+    let imageUrl = formData.img || ""; 
+
+    // 1. Upload Profile Image (Existing logic)
+    if (formData.imgFile) {
+      imageUrl = await uploadImageToCloudinary(formData.imgFile);
+    }
+
+    // 2. Upload Portfolio Images to Cloudinary 👈 NEW LOGIC
+    let finalPortfolioImageUrls = [];
+    
+    // If we uploaded new files, upload them to Cloudinary
+    if (formData.portfolioFiles && formData.portfolioFiles.length > 0) {
+      const uploadPromises = formData.portfolioFiles.map(file => uploadImageToCloudinary(file));
+      finalPortfolioImageUrls = await Promise.all(uploadPromises);
+    } else {
+      // If no new files, keep the existing URLs from the textarea
+      finalPortfolioImageUrls = formData.portfolioImages
+        ? formData.portfolioImages.split(",").map((img) => img.trim())
+        : [];
     }
 
     const influencerData = {
       name: formData.name,
       username: formData.username,
       email: formData.email,
-      claimed: false, 
+      //claimed: false,
+      claimed: formData.claimed ?? false,
       verified: formData.verified,
       age: formData.age,
       niches: formData.niches
@@ -180,6 +206,17 @@ const handleSubmit = async (e) => {
         facebooklive_mention: Number(formData.facebooklive_mentionPrice) || 0,
         facebooklive_showcase: Number(formData.facebooklive_showcasePrice) || 0,
       },
+      engagementRate: formData.engagementRate || "0%",
+      previousBrands: formData.previousBrands
+      ? formData.previousBrands.split(",").map((b) => b.trim())
+      : [],
+      portfolioLinks: formData.portfolioLinks
+      ? formData.portfolioLinks.split(",").map((l) => l.trim())
+      : [],
+      portfolioImages: formData.portfolioImages
+    ? formData.portfolioImages.split(",").map((img) => img.trim())
+    : [],
+     portfolioImages: finalPortfolioImageUrls, 
       img: imageUrl || "https://via.placeholder.com/100", // fallback if missing
       createdAt: new Date(),
     };
@@ -233,6 +270,11 @@ const handleSubmit = async (e) => {
       tiktokpostPrice: "",
       promoVideoPrice: "",
       voiceOverPrice: "",
+       engagementRate: "",
+    previousBrands: "",
+    portfolioLinks: "",
+    portfolioImages: "",
+    portfolioFiles: [],
 
       tiktoklive_shoutoutPrice: "",
     tiktoklive_segmentPrice: "",
@@ -257,6 +299,7 @@ const handleSubmit = async (e) => {
  const handleEdit = (inf) => {
   setFormData({
     ...inf,
+    email: inf.email || "",
     niches: inf.niches ? inf.niches.join(", ") : "",
     instagram: inf.socials?.instagram || "",
     youtube: inf.socials?.youtube || "",
@@ -275,7 +318,7 @@ const handleSubmit = async (e) => {
     promoVideoPrice: inf.services?.promoVideo || "",
     voiceOverPrice: inf.services?.voiceOver || "",
 
-     tiktoklive_shoutoutPrice: inf.services?.tiktoklive_shoutout || "",
+    tiktoklive_shoutoutPrice: inf.services?.tiktoklive_shoutout || "",
     tiktoklive_segmentPrice: inf.services?.tiktoklive_segment || "",
     tiktoklive_sponsorPrice: inf.services?.tiktoklive_sponsor || "",
     iglive_segmentPrice: inf.services?.iglive_segment || "",
@@ -284,6 +327,11 @@ const handleSubmit = async (e) => {
     youtubelive_pinnedPrice: inf.services?.youtubelive_pinned || "",
     facebooklive_mentionPrice: inf.services?.facebooklive_mention || "",
     facebooklive_showcasePrice: inf.services?.facebooklive_showcase || "",
+
+    previousBrands: inf.previousBrands ? inf.previousBrands.join(", ") : "",
+    portfolioLinks: inf.portfolioLinks ? inf.portfolioLinks.join(", ") : "",
+    engagementRate: inf.engagementRate || "",
+    portfolioImages: inf.portfolioImages ? inf.portfolioImages.join(", ") : "",
     
     imgFile: null, // reset file input
     img: inf.img || "", // keep existing image URL
@@ -489,7 +537,8 @@ const handleSubmit = async (e) => {
     <input
       name="email"
       type="email"
-      value={formData.email}
+      //value={formData.email}
+      value={formData.email || ""}
       onChange={handleChange}
       placeholder="influencer@email.com"
       className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-orange-400"
@@ -591,6 +640,84 @@ const handleSubmit = async (e) => {
   )}
  </div>
 
+          {/* --- Professional Details --- */}
+<h4 className="col-span-full font-bold mt-6 text-blue-600 border-b pb-2">
+  Professional Portfolio Details
+</h4>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Engagement Rate (e.g. 5.4%)
+  </label>
+  <input
+    name="engagementRate"
+    value={formData.engagementRate}
+    onChange={handleChange}
+    placeholder="5.4%"
+    className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-400"
+  />
+</div>
+
+<div className="col-span-full">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Previous Brands (Separated by commas)
+  </label>
+  <textarea
+    name="previousBrands"
+    value={formData.previousBrands}
+    onChange={handleChange}
+    placeholder="Coca-Cola, Safaricom, Netflix"
+    className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-400 h-20"
+  />
+</div>
+
+{/* --- Portfolio Links --- */}
+<div className="col-span-full">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Portfolio/Work Links (Separated by commas)
+  </label>
+  <textarea
+    name="portfolioLinks"
+    value={formData.portfolioLinks}
+    onChange={handleChange}
+    placeholder="https://tiktok.com/video1, https://instagram.com/p/123"
+    className="border p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-400 h-20"
+  />
+</div>
+
+{/* --- Portfolio Image Upload --- */}
+<div className="col-span-full bg-orange-50 p-4 rounded-xl border border-orange-100">
+  <label className="block text-sm font-bold text-orange-700 mb-2">
+    Upload Portfolio Screenshots (Cloudinary)
+  </label>
+  <input
+    type="file"
+    multiple // 👈 Allows selecting multiple files at once
+    accept="image/*"
+    onChange={(e) => {
+      const files = Array.from(e.target.files);
+      setFormData((prev) => ({ ...prev, portfolioFiles: files }));
+    }}
+    className="border p-2 rounded-lg w-full bg-white"
+  />
+  <p className="text-[10px] text-orange-600 mt-2 italic font-medium">
+    * Pick screenshots in the same order as the links above.
+  </p>
+  
+  {/* Show mini previews of what you selected */}
+  {formData.portfolioFiles?.length > 0 && (
+    <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
+      {formData.portfolioFiles.map((file, i) => (
+        <img 
+          key={i} 
+          src={URL.createObjectURL(file)} 
+          className="w-16 h-24 object-cover rounded-lg border-2 border-orange-300" 
+          alt="preview"
+        />
+      ))}
+    </div>
+  )}
+</div>
 
         {/* --- Social Followers --- */}
         <h4 className="col-span-full font-semibold mt-4 text-gray-700">
@@ -747,6 +874,15 @@ const handleSubmit = async (e) => {
         </p>
       </div>
 
+      <a 
+  href={`/profile/${viewInfluencer.username}`} 
+  target="_blank" 
+  rel="noreferrer"
+  className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold"
+>
+  View Public Profile
+</a>
+
       {/* Content */}
       <div className="p-6 space-y-6">
         {/* Niches */}
@@ -805,6 +941,7 @@ const handleSubmit = async (e) => {
       Ksh: {price || 0}
     </span>
   </div>
+  
 ))}
 
           </div>
