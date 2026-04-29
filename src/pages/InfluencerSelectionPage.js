@@ -718,31 +718,38 @@ const renderServiceItem = (name, price) => {
       {/* 1. NON-SCROLLING HEADER SECTION */}
       <div className="relative">
         {/* Gradient Cover */}
-        <div className="h-24 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"></div>
+        {/*<div className="h-24 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"></div>*/}
+        <div className="h-16 sm:h-24 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"></div>
         
         {/* Close Button */}
         <button
           onClick={() => setActiveInfluencer(null)}
           className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-colors backdrop-blur-md z-20"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
         {/* Profile Info Row */}
-        <div className="px-6 flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 mb-4 relative z-10">
+        {/*<div className="px-6 flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 mb-4 relative z-10">*/}
+        <div className="px-4 sm:px-6 flex flex-col sm:flex-row items-center sm:items-end gap-2 sm:gap-4 -mt-10 sm:-mt-12 mb-3 relative z-10">
           <img
             src={activeInfluencer.img}
             alt={activeInfluencer.name}
-            className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg bg-white"
+            //className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg bg-white"
+            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-lg bg-white"
           />
-          <div className="flex-1 text-center sm:text-left pb-1">
-            <h2 className="text-2xl font-extrabold flex items-center justify-center sm:justify-start gap-1.5 text-gray-900 mt-3">
+          <div className="flex-1 text-center sm:text-left">
+            <h2 
+            //className="text-2xl font-extrabold flex items-center justify-center sm:justify-start gap-1.5 text-gray-900 mt-3"
+             className="text-xl sm:text-2xl font-extrabold flex items-center justify-center sm:justify-start gap-1.5 text-gray-900 mt-1">
               {activeInfluencer.name}
               {activeInfluencer.verified && <CheckCircle className="text-blue-500" size={20} />}
             </h2>
-            <p className="text-gray-500 font-medium">{activeInfluencer.username}</p>
+            <p className="text-xs sm:text-gray-500 font-medium">{activeInfluencer.username}</p>
           </div>
-          <div className="bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm mb-1">
+          <div 
+          //className="bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm mb-1"
+            className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-[10px] sm:text-sm font-bold">
             Total Reach: {formatCompact(getTotalFollowers(activeInfluencer))}
           </div>
         </div>
@@ -899,8 +906,10 @@ const renderServiceItem = (name, price) => {
       </div>
 
       {/* 3. STICKY FOOTER */}
-      <div className="bg-white border-t border-gray-100 p-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-10">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+      {/*<div 
+      //className="bg-white border-t border-gray-100 p-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-10"
+        className="bg-white border-t border-gray-100 p-4 sm:p-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-10">
+        <div className="flex sm:flex-row justify-between items-center gap-4">
           <div className="text-center sm:text-left">
             <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px] block mb-1">Total Campaign Cost</span>
             <span className="text-3xl font-black text-orange-600">
@@ -918,7 +927,28 @@ const renderServiceItem = (name, price) => {
             Add to Campaign Box
           </button>
         </div>
-      </div>
+      </div>*/}
+      {/* 3. STICKY FOOTER */}
+<div className="bg-white border-t border-gray-100 p-4 sm:p-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-10">
+  <div className="flex justify-between items-center gap-4"> {/* Removed flex-col on mobile */}
+    <div className="text-left">
+      <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px] block">Total Cost</span>
+      <span className="text-xl sm:text-3xl font-black text-orange-600">
+        <span className="text-sm mr-0.5">Ksh</span>
+        {activeInfluencer.selectedServices
+          ? activeInfluencer.selectedServices.reduce((sum, s) => sum + (s.price * (s.quantity || 1)), 0).toLocaleString()
+          : "0"}
+      </span>
+    </div>
+    <button
+      onClick={handleAddToCampaign}
+      disabled={!activeInfluencer.selectedServices || activeInfluencer.selectedServices.length === 0}
+      className="flex-1 sm:flex-none px-6 py-3 sm:px-10 sm:py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm sm:text-lg font-bold rounded-xl sm:rounded-2xl shadow-lg disabled:opacity-30"
+    >
+      Add to Campaign Box
+    </button>
+  </div>
+</div>
       
     </div>
   </div>
